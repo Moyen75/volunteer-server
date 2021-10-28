@@ -1,6 +1,7 @@
 const express = require('express')
 const { MongoClient } = require('mongodb');
 const app = express()
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 const cors = require('cors')
@@ -11,7 +12,6 @@ app.use(express.json())
 // mongodb setup
 const uri = `mongodb+srv://volunteer:1FghzMwUoz10faJ0@cluster0.aghhg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log(uri)
 
 async function run() {
     try {
@@ -22,6 +22,13 @@ async function run() {
             const cursor = programsCollection.find({})
             const result = await cursor.toArray()
 
+            res.json(result)
+        })
+        app.get('/programs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await programsCollection.findOne(query);
+            console.log(result)
             res.json(result)
         })
     }
